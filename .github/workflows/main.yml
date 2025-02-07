@@ -209,14 +209,18 @@ jobs:
           zip -r "../$ZIP_NAME" ./*
           ls -lh "../$ZIP_NAME"
           echo "zip_name=$ZIP_NAME" >> $GITHUB_ENV
-      - name: Publish Release
+            - name: Publish Release
         run: |
+          set -e  # Exit immediately if a command exits with a non-zero status.
+
           # Change to the correct directory
           cd "./builds/${{ env.ROOT_DIR }}"
+
           # Debugging variables
-          echo "ZIP_NAME: ${{ env.zip_name }}"
+          echo "ZIP_NAME: ${{ env.env.zip_name }}"
           ZIP_FILE_PATH="${GITHUB_WORKSPACE}/builds/${{ env.ROOT_DIR }}/${{ env.zip_name }}"
           echo "ZIP_FILE_PATH: $ZIP_FILE_PATH"
+
           # Validate ZIP file existence
           if [ -f "$ZIP_FILE_PATH" ]; then
               echo "ZIP file found: $ZIP_FILE_PATH"
@@ -224,13 +228,29 @@ jobs:
               echo "Error: ZIP file not found at $ZIP_FILE_PATH!"
               exit 1
           fi
-          # Define the repository name if not already set
-          REPO_NAME=${REPO_NAME:-$GITHUB_REPOSITORY}
+
+          # Install GitHub CLI (if needed - checks if it's already installed)
+          if ! command -v gh &> /dev/null
+          then
+            echo "Installing GitHub CLI..."
+            sudo apt-get update
+            sudo apt-get install -y gh
+          else
+            echo "GitHub CLI already installed."
+          fi
+
+          # Authenticate GitHub CLI (usually not needed, but explicit for safety)
+          echo "Authenticating with GitHub Token..."
+          echo "$GH_TOKEN" | gh auth login --with-token
+
           # Create a release using the GitHub CLI
-          gh release create "v${{ env.BRANCH }}-$(date +'%Y.%m.%d-%H%M%S')" "$ZIP_FILE_PATH" \
-            --repo "$REPO_NAME" \
+          RELEASE_TAG="v${{ env.BRANCH }}-$(date +'%Y.%m.%d-%H%M%S')"
+          echo "Creating release tag: $RELEASE_TAG"
+
+          gh release create "$RELEASE_TAG" "$ZIP_FILE_PATH" \
+            --repo "$GITHUB_REPOSITORY" \
             --title "OP NORD4 A15 ${{ env.BRANCH }} With KernelSU NEXT & SUSFS" \
-            --notes "Kernel release" \
+            --notes "Kernel release"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
            
