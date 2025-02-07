@@ -229,9 +229,8 @@ jobs:
           # Create a release using the GitHub CLI
           gh release create "v${{ env.BRANCH }}-$(date +'%Y.%m.%d-%H%M%S')" "$ZIP_FILE_PATH" \
             --repo "$REPO_NAME" \
-            --title "OP12 A15 ${{ env.BRANCH }} With KernelSU & SUSFS" \
+            --title "OP NORD4 A15 ${{ env.BRANCH }} With KernelSU NEXT & SUSFS" \
             --notes "Kernel release" \
-            --prerelease
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
            
