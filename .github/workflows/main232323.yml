@@ -200,6 +200,8 @@ jobs:
           cd kernel_platform
           mkdir out
           export PATH="/usr/lib/ccache:$PATH"
+          git add .
+          git commit -m "test"
           # Modified build command with correct syntax
           ./build_with_bazel.py \
             -t pineapple \
