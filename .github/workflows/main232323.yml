@@ -200,9 +200,11 @@ jobs:
           cd kernel_platform
           mkdir out
           export PATH="/usr/lib/ccache:$PATH"
+          export CONFIG_LOCALVERSION_AUTO=n
+          export CONFIG_LOCALVERSION=""
           git add .
           git commit -m "test"
-          sed -i 's/export REPACK_IMG=true/export REPACK_IMG=false/g' 
+          #sed -i 's/export REPACK_IMG=true/export REPACK_IMG=false/g' 
           # Modified build command with correct syntax
           ./build_with_bazel.py \
             -t pineapple \
