@@ -202,6 +202,7 @@ jobs:
           export PATH="/usr/lib/ccache:$PATH"
           git add .
           git commit -m "test"
+          sed -i 's/export REPACK_IMG=true/export REPACK_IMG=false/g' 
           # Modified build command with correct syntax
           ./build_with_bazel.py \
             -t pineapple \
